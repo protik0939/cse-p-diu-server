@@ -186,18 +186,18 @@ async function run() {
 
 
         app.get('/profile/:uid/posts', async (req, res) => {
-            const uid = req.params.uid; // Captures the user's ID from the URL
-            const query = { uploaderUid: uid }; // Filters posts by the uploader's UID
+            const uid = req.params.uid;
+            const query = { uploaderUid: uid }; 
 
             try {
-                const posts = await csepdiuPostCollection.find(query).sort({ uploadDate: -1, uploadTime: -1 }).toArray(); // Retrieves all posts for that user
+                const posts = await csepdiuPostCollection.find(query).sort({ uploadDate: -1, uploadTime: -1 }).toArray(); 
                 if (posts.length > 0) {
-                    res.send(posts); // Sends the array of posts if found
+                    res.send(posts); 
                 } else {
-                    res.status(404).send({ message: 'No posts found for this user' }); // Sends a 404 error if no posts are found
+                    res.status(404).send({ message: 'No posts found for this user' }); 
                 }
             } catch (error) {
-                res.status(500).send({ message: 'Error retrieving posts', error }); // Handles any server errors
+                res.status(500).send({ message: 'Error retrieving posts', error }); 
             }
         });
 
