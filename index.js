@@ -135,11 +135,13 @@ async function run() {
             res.send(post);
         });
 
+
+
         app.put('/users/uid/:uid', async (req, res) => {
-            const uid = req.params.uid;
             const updatedUser = req.body;
 
-            const filter = { _id: new ObjectId(uid) };
+            const query = { uid: updatedUser.uid }; // Adjust this if `uid` is correct
+            const options = { upsert: true };
 
             const updateDoc = {
                 $set: {
@@ -151,16 +153,11 @@ async function run() {
                 },
             };
 
-            const options = { upsert: true };
-
-            try {
-                const result = await csepdiuDBCollection.updateOne(filter, updateDoc, options);
-                res.send(result);
-            } catch (error) {
-                console.error('Error updating user:', error);
-                res.status(500).send('Error updating user');
-            }
+            // Perform the update using the correct filter and update document
+            const result = await csepdiuDBCollection.updateOne(query, updateDoc, options);
+            res.send(result);
         });
+
 
 
 
@@ -186,6 +183,25 @@ async function run() {
                 res.status(404).send({ message: 'Post not found' });
             }
         });
+
+
+        app.get('/profile/:uid/posts', async (req, res) => {
+            const uid = req.params.uid; // Captures the user's ID from the URL
+            const query = { uploaderUid: uid }; // Filters posts by the uploader's UID
+
+            try {
+                const posts = await csepdiuPostCollection.find(query).sort({ uploadDate: -1, uploadTime: -1 }).toArray(); // Retrieves all posts for that user
+                if (posts.length > 0) {
+                    res.send(posts); // Sends the array of posts if found
+                } else {
+                    res.status(404).send({ message: 'No posts found for this user' }); // Sends a 404 error if no posts are found
+                }
+            } catch (error) {
+                res.status(500).send({ message: 'Error retrieving posts', error }); // Handles any server errors
+            }
+        });
+
+
 
 
         app.post('/posts/:id/comments', async (req, res) => {
