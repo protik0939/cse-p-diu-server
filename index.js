@@ -187,7 +187,7 @@ async function run() {
         app.put('/posts/:id', async (req, res) => {
             const id = req.params.id;
             const updatedPost = req.body;
-            const query = { _id: new ObjectId(id) }; // Ensure you're using ObjectId for querying by _id
+            const query = { _id: new ObjectId(id) }; 
             const options = { upsert : true }; 
 
             const updateDoc = {
