@@ -184,20 +184,43 @@ async function run() {
             }
         });
 
+        app.put('/posts/:id', async (req, res) => {
+            const id = req.params.id;
+            const updatedPost = req.body;
+            const query = { _id: new ObjectId(id) }; // Ensure you're using ObjectId for querying by _id
+            const options = { upsert : true }; 
+
+            const updateDoc = {
+                $set: {
+                    postTitle: updatedPost.updatedTitle,
+                    postDetails: updatedPost.updatedDetails,
+                },
+            };
+
+            try {
+                const result = await csepdiuPostCollection.updateOne(query, updateDoc, options);
+                res.send(result);
+            } catch (error) {
+                console.error("Error updating post:", error);
+                res.status(500).send({ error: 'Failed to update post' });
+            }
+        });
+
+
 
         app.get('/profile/:uid/posts', async (req, res) => {
             const uid = req.params.uid;
-            const query = { uploaderUid: uid }; 
+            const query = { uploaderUid: uid };
 
             try {
-                const posts = await csepdiuPostCollection.find(query).sort({ uploadDate: -1, uploadTime: -1 }).toArray(); 
+                const posts = await csepdiuPostCollection.find(query).sort({ uploadDate: -1, uploadTime: -1 }).toArray();
                 if (posts.length > 0) {
-                    res.send(posts); 
+                    res.send(posts);
                 } else {
-                    res.status(404).send({ message: 'No posts found for this user' }); 
+                    res.status(404).send({ message: 'No posts found for this user' });
                 }
             } catch (error) {
-                res.status(500).send({ message: 'Error retrieving posts', error }); 
+                res.status(500).send({ message: 'Error retrieving posts', error });
             }
         });
 
