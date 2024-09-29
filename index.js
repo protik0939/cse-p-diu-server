@@ -3,7 +3,6 @@ const cors = require('cors');
 const jwt = require('jsonwebtoken');
 const cookieParser = require('cookie-parser')
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
-const { default: axios } = require('axios');
 // const { createProxyMiddleware } = require('http-proxy-middleware');
 const app = express();
 const port = process.env.PORT || 5000;
@@ -116,6 +115,7 @@ async function run() {
         const csepdiuPostCollection = client.db('postDB').collection('allPosts');
 
 
+
         app.get('/studentInfo/:studentId', async (req, res) => {
             const { studentId } = req.params;
             console.log(studentId);
@@ -128,6 +128,7 @@ async function run() {
                 console.log(error);
             }
         });
+
 
         app.get('/results/:semesterId/:studentId', async (req, res) => {
             const { semesterId, studentId } = req.params;
@@ -144,7 +145,7 @@ async function run() {
             }
         });
 
-        
+
         app.get('/semesterlist', async (req, res) => {
             const { semesterId, studentId } = req.params;
             console.log(req.params);
@@ -159,6 +160,9 @@ async function run() {
                 throw error;
             }
         });
+
+
+
 
 
 
