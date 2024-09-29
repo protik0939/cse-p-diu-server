@@ -27,21 +27,7 @@ require('dotenv').config()
 // };
 
 
-const allowedOrigins = ['http://localhost:5173', 'https://cse-p-diu.web.app'];
-
-app.use(cors({
-    origin: (origin, callback) => {
-        // Check if the origin is in the allowedOrigins list
-        if (allowedOrigins.includes(origin) || !origin) {
-            callback(null, true);  // Allow the request if the origin is allowed or if it's a server-side request
-        } else {
-            callback(new Error('Not allowed by CORS'));  // Reject if not in allowedOrigins
-        }
-    },
-    credentials: true
-}));
-
-app.use(express.json());
+app.use(cors({ origin: true, credentials: true }));
 app.use(cookieParser());
 
 
