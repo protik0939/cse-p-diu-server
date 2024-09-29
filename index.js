@@ -27,7 +27,9 @@ require('dotenv').config()
 // };
 
 
-app.use(cors({ origin: true, credentials: true }));
+app.use(cors({
+    origin: ['https://cse-p-diu.web.app', 'http://localhost:5173']
+  }));
 app.use(express.json());
 app.use(cookieParser());
 
