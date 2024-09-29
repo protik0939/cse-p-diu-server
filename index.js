@@ -3,7 +3,6 @@ const cors = require('cors');
 const jwt = require('jsonwebtoken');
 const cookieParser = require('cookie-parser')
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
-const { default: axios } = require('axios');
 // const { createProxyMiddleware } = require('http-proxy-middleware');
 const app = express();
 const port = process.env.PORT || 5000;
@@ -115,58 +114,6 @@ async function run() {
         const csepdiuDBCollection = client.db('usersDB').collection('userInfo');
         const csepdiuPostCollection = client.db('postDB').collection('allPosts');
 
-
-
-        app.get('/studentInfo/:studentId', async (req, res) => {
-            const { studentId } = req.params;
-            console.log(studentId);
-            try {
-                const url = `http://software.diu.edu.bd:8006/result/studentInfo?studentId=${studentId}`;
-                const result = await axios.get(url);
-                console.log(result.data);
-                res.send(result.data);
-            } catch (error) {
-                console.log(error);
-            }
-        });
-
-
-        app.get('/results/:semesterId/:studentId', async (req, res) => {
-            const { semesterId, studentId } = req.params;
-            console.log(req.params);
-
-            const url = `http://software.diu.edu.bd:8006/result?grecaptcha=&semesterId=${semesterId}&studentId=${studentId}`;
-            try {
-                const result = await axios.get(url);
-                console.log(result);
-                res.send(result.data);
-            } catch (error) {
-                console.error('Error fetching the semester result:', error);
-                throw error;
-            }
-        });
-
-
-        app.get('/semesterlist', async (req, res) => {
-            const { semesterId, studentId } = req.params;
-            console.log(req.params);
-
-            const url = `http://software.diu.edu.bd:8006/result/semesterList`;
-            try {
-                const result = await axios.get(url);
-                console.log(result);
-                res.send(result.data);
-            } catch (error) {
-                console.error('Error fetching the semester result:', error);
-                throw error;
-            }
-        });
-
-
-
-
-
-
         app.get('/users', async (req, res) => {
             const cursor = csepdiuDBCollection.find();
             const result = await cursor.toArray();
@@ -240,8 +187,8 @@ async function run() {
         app.put('/posts/:id', async (req, res) => {
             const id = req.params.id;
             const updatedPost = req.body;
-            const query = { _id: new ObjectId(id) };
-            const options = { upsert: true };
+            const query = { _id: new ObjectId(id) }; 
+            const options = { upsert : true }; 
 
             const updateDoc = {
                 $set: {
