@@ -19,6 +19,7 @@
     "http-proxy-middleware": "^3.0.0",
     "jsonwebtoken": "^9.0.2",
     "mongodb": "^6.8.0",
-    "mongoose": "^8.5.2"
+    "mongoose": "^8.5.2",
+    "nodemailer": "^6.9.15"
   }
 }

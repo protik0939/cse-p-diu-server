@@ -1,7 +1,8 @@
 const express = require('express');
 const cors = require('cors');
 const jwt = require('jsonwebtoken');
-const cookieParser = require('cookie-parser')
+const cookieParser = require('cookie-parser');
+const nodemailer = require('nodemailer');
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const { default: axios } = require('axios');
 // const { createProxyMiddleware } = require('http-proxy-middleware');
@@ -29,7 +30,7 @@ require('dotenv').config()
 
 app.use(cors({
     origin: ['https://cse-p-diu.web.app', 'http://localhost:5173']
-  }));
+}));
 app.use(express.json());
 app.use(cookieParser());
 
@@ -77,6 +78,17 @@ const client = new MongoClient(uri, {
     }
 });
 
+const transporter = nodemailer.createTransport({
+    service: 'gmail', // Use your email service (e.g., Gmail)
+    host: "smtp.ethereal.email",
+    port: 587,
+    secure: false,
+    auth: {
+        user: process.env.SENDER_EMAIL, // Your email address
+        pass: process.env.SENDER_PASS, // Your email password or app-specific password
+    },
+});
+
 // Own middleware
 const verifyToken = (req, res, next) => {
     const token = req.cookies?.token;
@@ -116,6 +128,7 @@ async function run() {
 
         const csepdiuDBCollection = client.db('usersDB').collection('userInfo');
         const csepdiuPostCollection = client.db('postDB').collection('allPosts');
+        const csepdiuNotices = client.db('NoticesDB').collection('Notices');
 
         app.get('/users', async (req, res) => {
             const cursor = csepdiuDBCollection.find();
@@ -429,6 +442,99 @@ async function run() {
             } catch (error) {
                 console.error('Error fetching the semester result:', error);
                 throw error;
+            }
+        });
+
+
+
+
+
+        app.post('/notices', async (req, res) => {
+            const formData = req.body;
+            try {
+              const result = await csepdiuNotices.insertOne(formData);
+              res.status(200).json({ message: 'Notice uploaded successfully!', data: result });
+            } catch (error) {
+              console.error('Error saving notice:', error);
+              res.status(500).json({ message: 'Error saving notice', error });
+            }
+          });
+      
+      
+          app.get('/notices', async (req, res) => {
+            try {
+              const notices = await csepdiuNotices.find().toArray();
+              res.status(200).json(notices);
+            } catch (error) {
+              console.error('Error:', error);
+              res.status(500).json({ message: 'Error:', error });
+            }
+          });
+      
+          app.get('/notices/:id', async (req, res) => {
+            const { id } = req.params;
+            try {
+              const message = await csepdiuNotices.findOne({ _id: new ObjectId(id) });
+              if (message) {
+                res.status(200).json(message);
+              } else {
+                res.status(404).json({ message: 'Nothing Found' });
+              }
+            } catch (error) {
+              console.error('Error retrieving data:', error);
+              res.status(500).json({ message: 'Error retrieving data', error });
+            }
+          });
+
+
+          app.put('/notices/:id', async (req, res) => {
+            const noticeId = req.params.id;
+            const userId = req.body.userId;
+        
+            try {
+                // Push the userId to the 'seen' array only if it's not already there
+                await csepdiuNotices.findByIdAndUpdate(noticeId, {
+                    $set: { seen: userId }
+                });
+                res.json({ message: 'User marked as seen' });
+            } catch (error) {
+                res.status(500).json({ message: 'Error updating seen status' });
+            }
+        });
+      
+      
+          app.delete('/notices/:id', async (req, res) => {
+            const { id } = req.params;
+      
+            try {
+              const result = await csepdiuNotices.deleteOne({ _id: new ObjectId(id) });
+              if (result.deletedCount > 0) {
+                res.status(200).json({ message: 'Notice deleted successfully!' });
+              } else {
+                res.status(404).json({ message: 'Notice not found' });
+              }
+            } catch (error) {
+              console.error('Error deleting Notice:', error);
+              res.status(500).json({ message: 'Error deleting Notice', error });
+            }
+          });
+
+
+        app.post('/send-email', async (req, res) => {
+            const { to, subject, html } = req.body;
+
+            const mailOptions = {
+                from: process.env.EMAIL_USER, // Sender address
+                to, // List of recipients
+                subject, // Subject of the email
+                html, // Plain text body
+            };
+            try {
+                const info = await transporter.sendMail(mailOptions);
+                res.status(200).json({ message: 'Email sent successfully!', info });
+            } catch (error) {
+                console.error('Error sending email:', error);
+                res.status(500).json({ message: 'Error sending email', error });
             }
         });
 
