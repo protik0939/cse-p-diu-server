@@ -13,21 +13,6 @@ require('dotenv').config()
 // middleware
 
 
-// const corsOptions = {
-//     origin: 'https://cse-p-diu.web.app', // Allow requests from your frontend origin
-//     "methods": [
-//         "GET",
-//         "POST",
-//         "PUT",
-//         "PATCH",
-//         "DELETE",
-//         "OPTIONS"
-//     ], // Specify the HTTP methods that are allowed
-//     allowedHeaders: ['Content-Type', 'Authorization'], // Specify the headers that are allowed
-//     credentials: true // If you need to allow cookies or authentication headers
-// };
-
-
 app.use(cors({
     origin: ['https://cse-p-diu.web.app', 'http://localhost:5173']
 }));
@@ -35,35 +20,6 @@ app.use(express.json());
 app.use(cookieParser());
 
 
-//proxy start here
-
-
-
-// app.use('/secure-api/semesterList', createProxyMiddleware({
-//     target: 'http://software.diu.edu.bd:8006',
-//     changeOrigin: true,
-//     secure: false,
-//     pathRewrite: { '^/secure-api/semesterList': '/result/semesterList' }, // Rewrites the path to match the target server's expected path
-// }));
-
-// app.use('/secure-api/studentInfo', createProxyMiddleware({
-//     target: 'http://software.diu.edu.bd:8006',
-//     changeOrigin: true,
-//     secure: false,
-//     pathRewrite: { '^/secure-api/studentInfo': '/result/studentInfo' }, // Rewrites the path to match the target server's expected path
-// }));
-
-// app.use('/secure-api/result', createProxyMiddleware({
-//     target: 'http://software.diu.edu.bd:8006',
-//     changeOrigin: true,
-//     secure: false,
-//     pathRewrite: { '^/secure-api/result': '/result' }, // Rewrites the path to match the target server's expected path
-// }));
-
-
-
-
-//proxy end here
 
 
 
